@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>金魚すくい</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.1.9/p5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+  </head>
+  <style>
+    button {
+      appearance: none;
+      border: solid 3px rgb(199, 21, 133);
+      border-radius: 5px;
+      background-color: white;
+      padding: 5px;
+      font-family: cursive;
+      font-size: 10px;
+      font-weight: bold;
+      width: 100px;
+      height: 40px;
+      letter-spacing: 5px;
+      margin: 5px;
+      cursor: pointer;
+      color: rgb(199, 21, 133);
+      transition: 0.4s;
+    }
+    button:hover {
+      background-color: #ffcceb;
+    }
+    body {
+      font-family: cursive;
+      font-size: 20px;
+      font-weight: bold;
+      color: #c71585;
+      background-color: #ffcceb;
+    }
+  </style>
+
+  <body>
+    <center>
+      <h1>金魚すくい</h1>
+      <div>
+        <div>番号: <span id="myid"></span></div>
+        <div>
+          ポイID:
+          <input id="room" type="text" size="10" value="room001" />
+        </div>
+        <form name="ktimer" onsubmit="return false;">
+          <h>制限時間：</h>
+          <input type="text" name="counter" size="1" />
+          <h>秒</h>
+          <h>獲得：</h>
+          <input id="kick_count" type="text" value="0" size="1" />
+          <h>匹</h>
+          <button id="connect" name="b_start" onclick="count_start()">
+            スタート
+          </button>
+          <button id="speak">ルール説明</button>
+        </form>
+      </div>
+    </center>
+    <script>
+      let socket = io.connect();
+      let myid;
+
+      let room = document.querySelector("#room").value;
+      let btn = document.querySelector("#connect");
+      let b = 0;
+      let g = 0;
+
+      btn.addEventListener("click", function () {
+        socket.emit("join", room);
+        btn.remove();
+      });
+
+      socket.on("mylogin", function (data) {
+        myid = data;
+        document.querySelector("#myid").innerHTML = myid;
+        console.log("あなたのID: ", myid);
+      });
+
+      socket.on("sensor", function (data) {
+        g = parseFloat(data.g);
+        b = parseFloat(data.b);
+        console.log(g);
+      });
+
+      let x = 250;
+      let y = 250;
+      let targetX = 250;
+      let targetY = 250;
+      let targetA = 250;
+      let targetB = 250;
+      let targetC = 250;
+      let targetD = 250;
+      let speed = 0.03;
+
+      function preload() {
+        poi = loadImage("stamps/poi.png");
+        kingyo1 = loadImage("stamps/kingyo1.png");
+        kingyo2 = loadImage("stamps/kingyo2.png");
+        kingyo3 = loadImage("stamps/kingyo3.png");
+        kingyo4 = loadImage("stamps/kingyo4.png");
+        kingyo5 = loadImage("stamps/kingyo5.png");
+        kingyo6 = loadImage("stamps/kingyo6.png");
+      }
+
+      function setup() {
+        createCanvas(1500, 500);
+        background(135, 206, 250);
+        imageMode(CENTER);
+        targetX = random(width);
+        targetY = random(height);
+        targetA = random(width);
+        targetB = random(height);
+        targetC = random(width);
+        targetD = random(height);
+        targetE = random(width);
+        targetF = random(height);
+        targetG = random(width);
+        targetH = random(height);
+        targetI = random(width);
+        targetJ = random(height);
+      }
+
+      function kingyo_1() {
+        targetX = random(width);
+        targetY = random(height);
+      }
+
+      function kingyo_2() {
+        targetA = random(width);
+        targetB = random(height);
+      }
+
+      function kingyo_3() {
+        targetC = random(width);
+        targetD = random(height);
+      }
+
+      function kingyo_4() {
+        targetE = random(width);
+        targetF = random(height);
+      }
+
+      function kingyo_5() {
+        targetG = random(width);
+        targetH = random(height);
+      }
+
+      function kingyo_6() {
+        targetI = random(width);
+        targetJ = random(height);
+      } //金魚
+      function draw() {
+        background(135, 206, 250);
+        x = x + speed * g;
+        y = y + speed * b;
+        let distance1 = Math.sqrt(
+          (x - targetX) * (x - targetX) * (y - targetY) * (y - targetY)
+        );
+        let distance2 = Math.sqrt(
+          (x - targetA) * (x - targetA) * (y - targetB) * (y - targetB)
+        );
+        let distance3 = Math.sqrt(
+          (x - targetC) * (x - targetC) * (y - targetD) * (y - targetD)
+        );
+        let distance4 = Math.sqrt(
+          (x - targetE) * (x - targetE) * (y - targetF) * (y - targetF)
+        );
+        let distance5 = Math.sqrt(
+          (x - targetG) * (x - targetG) * (y - targetH) * (y - targetH)
+        );
+        let distance6 = Math.sqrt(
+          (x - targetI) * (x - targetI) * (y - targetJ) * (y - targetJ)
+        );
+        if (distance1 < 5) {
+          kingyo_1();
+          kick_count.value++;
+        }
+        if (distance2 < 5) {
+          kingyo_2();
+          kick_count.value++;
+        }
+        if (distance3 < 5) {
+          kingyo_3();
+          kick_count.value++;
+        }
+        if (distance4 < 5) {
+          kingyo_4();
+          kick_count.value++;
+        }
+        if (distance5 < 5) {
+          kingyo_5();
+          kick_count.value++;
+        }
+        if (distance6 < 5) {
+          kingyo_6();
+          kick_count.value++;
+        }
+
+        image(kingyo1, targetX, targetY, 150, 150);
+        image(kingyo2, targetA, targetB, 150, 150);
+        image(kingyo3, targetC, targetD, 100, 100);
+        image(kingyo4, targetE, targetF, 150, 150);
+        image(kingyo5, targetG, targetH, 150, 150);
+        image(kingyo6, targetI, targetJ, 100, 100);
+        image(poi, x, y, 160, 160);
+      }
+
+      //制限時間
+      def_count = 30;
+
+      timer_reset();
+
+      function timer_reset() {
+        timerID = 0;
+        document.ktimer.counter.value = def_count;
+        document.ktimer.b_start.disabled = false;
+      }
+
+      function timer_reset1() {
+        timerID = 0;
+        document.ktimer.counter.value = 0;
+        document.ktimer.b_start.disabled = false;
+      }
+
+      function set_timer(num) {
+        if (timerID > 0) {
+          count_stop();
+        }
+
+        document.ktimer.counter.value = num;
+        count_start();
+      }
+
+      function count_start() {
+        count = document.ktimer.counter.value;
+        document.ktimer.b_start.disabled = true;
+        timerID = setInterval("countdown()", 1000);
+      }
+
+      function countdown() {
+        count--;
+        document.ktimer.counter.value = count_format(count);
+        if (count <= 0) {
+          count_stop();
+        }
+      }
+
+      function count_stop() {
+        timer_reset1();
+      }
+
+      function count_format(num) {
+        var ts;
+        ts = num % 60;
+        return ts;
+      }
+
+      // 発話機能をインスタンス化
+      let msg = new SpeechSynthesisUtterance();
+      let voices = window.speechSynthesis.getVoices();
+
+      function speak(text) {
+        // 以下オプション設定
+        msg.voice = voices[7]; // 7:Google 日本人 ja-JP ※他は英語のみ
+        msg.volume = 1.0; // 音量 min 0 ~ max 1
+        msg.rate = 1.5; // 速度 min 0 ~ max 10
+        msg.pitch = 1.0; // 音程 min 0 ~ max 2
+
+        msg.text = text; // 喋る内容
+        msg.lang = "ja-JP"; // en-US or ja-JP
+        // msg.lang = 'en-US'; // en-US or ja-JP
+
+        // 発話実行
+        speechSynthesis.speak(msg);
+      }
+
+      // 終了時の処理
+      msg.onend = function (event) {
+        console.log("End: ", text);
+      };
+
+      let text =
+        "なんびき金魚がすくえるかを競うゲームです。時間内にできるだけ多くの金魚をすくってください。";
+
+      let button = document.querySelector("#speak");
+      button.onclick = function () {
+        speak(text);
+      };
+    </script>
+  </body>
+</html>
