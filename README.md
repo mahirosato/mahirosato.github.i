@@ -1,2 +1,2 @@
-# mahirosato.github.i
+# mahirosato.github.io
 Created with CodeSandbox
